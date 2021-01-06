@@ -34,7 +34,6 @@ func NewInventoryReport(result result.Result, clusterName string) *InventoryRepo
 // This method does the actual Reporting (via HTTP) to Anchore
 //nolint:gosec
 func Report(result result.Result, anchoreDetails config.AnchoreInfo, appConfig *config.Application) error {
-	log.Debug("Reporting results to Anchore")
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: anchoreDetails.HTTP.Insecure},
 	}
@@ -44,6 +43,7 @@ func Report(result result.Result, anchoreDetails config.AnchoreInfo, appConfig *
 	}
 
 	anchoreURL, err := buildURL(anchoreDetails)
+	log.Debugf("Reporting results to Anchore: %s", anchoreURL)
 	if err != nil {
 		return fmt.Errorf("failed to build url: %w", err)
 	}
