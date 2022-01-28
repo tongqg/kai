@@ -22,7 +22,7 @@ type ReportImage struct {
 }
 
 // NewReportItem parses a list of pods into a ReportItem full of unique images
-func NewReportItem(pods []v1.Pod, namespace string, ignoreNotRunning bool, missingTagPolicy string, dummyTag string) ReportItem {
+func NewReportItem(pods []v1.Pod, namespace string, ignoreNotRunning bool, missingTagPolicy string, dummyTag string, registryOverride string) ReportItem {
 	reportItem := ReportItem{
 		Namespace: namespace,
 		Images:    []ReportImage{},
@@ -33,7 +33,7 @@ func NewReportItem(pods []v1.Pod, namespace string, ignoreNotRunning bool, missi
 		if ignoreNotRunning && pod.Status.Phase != "Running" {
 			continue
 		}
-		reportItem.extractUniqueImages(pod, missingTagPolicy, dummyTag)
+		reportItem.extractUniqueImages(pod, missingTagPolicy, dummyTag, registryOverride)
 	}
 
 	return reportItem
@@ -52,7 +52,7 @@ func (i *ReportImage) key() string {
 // Adds an ReportImage to the ReportItem struct (if it doesn't exist there already)
 //
 // IMPORTANT: Ensures unique images across pods
-func (r *ReportItem) extractUniqueImages(pod v1.Pod, missingTagPolicy string, dummyTag string) {
+func (r *ReportItem) extractUniqueImages(pod v1.Pod, missingTagPolicy string, dummyTag string, registryOverride string) {
 	// Build a Map to make use as a Set (unique list). Values
 	// are empty structs so they don't waste space
 	unique := make(map[string]struct{})
@@ -61,7 +61,7 @@ func (r *ReportItem) extractUniqueImages(pod v1.Pod, missingTagPolicy string, du
 	}
 
 	// Process all containers in a pod and return all the unique images
-	images := processContainers(pod, missingTagPolicy, dummyTag)
+	images := processContainers(pod, missingTagPolicy, dummyTag, registryOverride)
 
 	// If the image isn't in the set already, append it to the list
 	for _, image := range images {
@@ -169,11 +169,22 @@ func (img *image) handleMissingTag(missingTagPolicy string, dummyTag string) {
 	}
 }
 
+func (img *image) handleRegistryOverride(registryOverride string) {
+	if registryOverride != "" {
+		f := strings.Index(img.repo, "/")
+		if f > -1 {
+			img.repo = registryOverride + "/" + img.repo[strings.Index(img.repo, "/")+1:]
+		} else {
+			img.repo = registryOverride + "/" + img.repo
+		}
+	}
+}
+
 // processContainers takes in a pod object and will return a list of unique
 // ReportImage structures from the containers inside the pod
 //
 // IMPORTANT: Ensures unique images inside a pod
-func processContainers(pod v1.Pod, missingTagPolicy string, dummyTag string) []ReportImage {
+func processContainers(pod v1.Pod, missingTagPolicy string, dummyTag string, registryOverride string) []ReportImage {
 	unique := make(map[string]image)
 
 	containerset := fillContainerDetails(pod)
@@ -195,6 +206,8 @@ func processContainers(pod v1.Pod, missingTagPolicy string, dummyTag string) []R
 			}
 			img.handleMissingTag(missingTagPolicy, dummyTag)
 		}
+
+		img.handleRegistryOverride(registryOverride)
 
 		key := fmt.Sprintf("%s:%s@%s", img.repo, img.tag, img.digest)
 		unique[key] = img

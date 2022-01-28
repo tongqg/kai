@@ -96,17 +96,17 @@ func TestSameTagDifferentDigestSamePod(t *testing.T) {
 		Namespace: namespace,
 		Images:    []ReportImage{},
 	}
-	actual.extractUniqueImages(mockPod, defaultMissingTagPolicy, defualtDummyTag)
+	actual.extractUniqueImages(mockPod, defaultMissingTagPolicy, defualtDummyTag, "hub.tess.io")
 
 	expected := ReportItem{
 		Namespace: namespace,
 		Images: []ReportImage{
 			{
-				Tag:        "jpetersenames/sametag:latest",
+				Tag:        "hub.tess.io/sametag:latest",
 				RepoDigest: "sha256:5762a7f909e42866c63570f3107e2ab9d6d39309233f4312bb40c3b68aaf4f8a",
 			},
 			{
-				Tag:        "jpetersenames/sametag:latest",
+				Tag:        "hub.tess.io/sametag:latest",
 				RepoDigest: "sha256:a0b39cd754f1236114a1603ee1791deb660c78bb963da1f6aed48807c796b9d1",
 			},
 		},
@@ -173,7 +173,7 @@ func TestSameTagDifferentDigestDistinctPods(t *testing.T) {
 			},
 		},
 	}
-	actual := NewReportItem(mockPods, namespace, defaultIgnoreNotRunning, defaultMissingTagPolicy, defualtDummyTag)
+	actual := NewReportItem(mockPods, namespace, defaultIgnoreNotRunning, defaultMissingTagPolicy, defualtDummyTag, "")
 
 	expected := ReportItem{
 		Namespace: namespace,
@@ -231,7 +231,7 @@ func TestAddImageWithDigestNoTagMTPAsDigest(t *testing.T) {
 		Namespace: namespace,
 		Images:    []ReportImage{},
 	}
-	actual.extractUniqueImages(mockPod, defaultMissingTagPolicy, defualtDummyTag)
+	actual.extractUniqueImages(mockPod, defaultMissingTagPolicy, defualtDummyTag, "")
 
 	expected := ReportItem{
 		Namespace: namespace,
@@ -286,7 +286,7 @@ func TestAddImageWithDigestNoTagMTPAsInsert(t *testing.T) {
 		Namespace: namespace,
 		Images:    []ReportImage{},
 	}
-	actual.extractUniqueImages(mockPod, "insert", defualtDummyTag)
+	actual.extractUniqueImages(mockPod, "insert", defualtDummyTag, "")
 
 	expected := ReportItem{
 		Namespace: namespace,
@@ -340,7 +340,7 @@ func TestAddImageWithDigestNoTagMTPAsDrop(t *testing.T) {
 		Namespace: namespace,
 		Images:    []ReportImage{},
 	}
-	actual.extractUniqueImages(mockPod, "drop", defualtDummyTag)
+	actual.extractUniqueImages(mockPod, "drop", defualtDummyTag, "")
 
 	expected := ReportItem{
 		Namespace: namespace,
@@ -388,7 +388,7 @@ func TestAddImageWithDigestWithTag(t *testing.T) {
 		Namespace: namespace,
 		Images:    []ReportImage{},
 	}
-	actual.extractUniqueImages(mockPod, defaultMissingTagPolicy, defualtDummyTag)
+	actual.extractUniqueImages(mockPod, defaultMissingTagPolicy, defualtDummyTag, "")
 
 	expected := ReportItem{
 		Namespace: namespace,
@@ -442,7 +442,7 @@ func TestAddImageNoDigestNoTag(t *testing.T) {
 		Namespace: namespace,
 		Images:    []ReportImage{},
 	}
-	actual.extractUniqueImages(mockPod, defaultMissingTagPolicy, defualtDummyTag)
+	actual.extractUniqueImages(mockPod, defaultMissingTagPolicy, defualtDummyTag, "")
 
 	expected := ReportItem{
 		Namespace: namespace,
@@ -494,7 +494,7 @@ func TestAddImageNoDigestWithTag(t *testing.T) {
 		Namespace: namespace,
 		Images:    []ReportImage{},
 	}
-	actual.extractUniqueImages(mockPod, defaultMissingTagPolicy, defualtDummyTag)
+	actual.extractUniqueImages(mockPod, defaultMissingTagPolicy, defualtDummyTag, "")
 
 	expected := ReportItem{
 		Namespace: namespace,
@@ -544,7 +544,7 @@ func TestInitContainer(t *testing.T) {
 		Namespace: namespace,
 		Images:    []ReportImage{},
 	}
-	actual.extractUniqueImages(mockPod, defaultMissingTagPolicy, defualtDummyTag)
+	actual.extractUniqueImages(mockPod, defaultMissingTagPolicy, defualtDummyTag, "")
 
 	expected := ReportItem{
 		Namespace: namespace,
@@ -648,7 +648,7 @@ func TestNewReportItem(t *testing.T) {
 			},
 		},
 	}
-	actual := NewReportItem(mockPods, namespace, defaultIgnoreNotRunning, defaultMissingTagPolicy, defualtDummyTag)
+	actual := NewReportItem(mockPods, namespace, defaultIgnoreNotRunning, defaultMissingTagPolicy, defualtDummyTag, "")
 
 	expected := ReportItem{
 		Namespace: namespace,
@@ -761,7 +761,7 @@ func TestNewReportItemNotRunningTrue(t *testing.T) {
 			},
 		},
 	}
-	actual := NewReportItem(mockPods, namespace, defaultIgnoreNotRunning, defaultMissingTagPolicy, defualtDummyTag)
+	actual := NewReportItem(mockPods, namespace, defaultIgnoreNotRunning, defaultMissingTagPolicy, defualtDummyTag, "")
 
 	expected := ReportItem{
 		Namespace: namespace,
@@ -866,7 +866,7 @@ func TestNewReportItemNotRunningFalse(t *testing.T) {
 			},
 		},
 	}
-	actual := NewReportItem(mockPods, namespace, false, defaultMissingTagPolicy, defualtDummyTag)
+	actual := NewReportItem(mockPods, namespace, false, defaultMissingTagPolicy, defualtDummyTag, "")
 
 	expected := ReportItem{
 		Namespace: namespace,
@@ -935,7 +935,7 @@ func TestNewReportItemEmptyPods(t *testing.T) {
 			},
 		},
 	}
-	actual := NewReportItem(mockPods, namespace, defaultIgnoreNotRunning, defaultMissingTagPolicy, defualtDummyTag)
+	actual := NewReportItem(mockPods, namespace, defaultIgnoreNotRunning, defaultMissingTagPolicy, defualtDummyTag, "")
 
 	expected := ReportItem{
 		Namespace: namespace,
@@ -954,7 +954,7 @@ func TestNewReportItemEmptyPods(t *testing.T) {
 func TestNewReportItemEmptyPodList(t *testing.T) {
 	namespace := "default"
 	mockPods := []v1.Pod{}
-	actual := NewReportItem(mockPods, namespace, defaultIgnoreNotRunning, defaultMissingTagPolicy, defualtDummyTag)
+	actual := NewReportItem(mockPods, namespace, defaultIgnoreNotRunning, defaultMissingTagPolicy, defualtDummyTag, "")
 
 	expected := ReportItem{
 		Namespace: namespace,

@@ -56,6 +56,7 @@ type Application struct {
 	IgnoreNotRunning                bool        `mapstructure:"ignore-not-running"`
 	PollingIntervalSeconds          int         `mapstructure:"polling-interval-seconds"`
 	AnchoreDetails                  AnchoreInfo `mapstructure:"anchore"`
+	RegistryOverride                string      `mapstructure:"registry-override"`
 }
 
 // MissingTagConf details the policy for handling missing tags when reporting images
@@ -131,6 +132,7 @@ func setNonCliDefaultValues(v *viper.Viper) {
 	v.SetDefault("namespaces", []string{})
 	v.SetDefault("namespace-selectors.include", []string{})
 	v.SetDefault("namespace-selectors.exclude", []string{})
+	v.SetDefault("registry-override", "")
 }
 
 // Load the Application Configuration from the Viper specifications
